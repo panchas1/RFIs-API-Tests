@@ -1,0 +1,3224 @@
+{
+	"info": {
+		"_postman_id": "9063a09a-5da7-43b7-8da9-ac8a5be4eec5",
+		"name": "ACC RFIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9269827"
+	},
+	"item": [
+		{
+			"name": "Create RFI",
+			"item": [
+				{
+					"name": "create_submitted_RFI",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-US"
+							},
+							{
+								"key": "Accept-Encoding",
+								"value": "gzip, deflate, br, zstd"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "https://acc-qa.autodesk.com"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Priority",
+								"value": "u=0"
+							},
+							{
+								"key": "x-user-id",
+								"value": "A772X4ZRJE2Q6N8C",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"497f6eca-6276-4993-bfeb-53cbbbbaff08\",\n  \"status\": \"open\",\n  \"customIdentifier\": \"233\",\n  \"title\": \"wall color\",\n  \"question\": \"what should be the color of the outer wall?\",\n  \"suggestedAnswer\": \"blue\",\n  \"assignedTo\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"locationDescription\": \"In the middle of the room\",\n  \"locations\": [\n    \"AJJASD2-FFE3\",\n    \"JTOEN-FFD33\"\n  ],\n  \"dueDate\": \"2018-01-12T13:06:39.216Z\",\n  \"costImpact\": \"Yes\",\n  \"scheduleImpact\": \"Yes\",\n  \"priority\": \"High\",\n  \"discipline\": [\n    \"Architectural\"\n  ],\n  \"category\": [\n    \"Constructability\"\n  ],\n  \"reference\": \"ID-1234\",\n  \"coReviewers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"watchers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"commentsAttributes\": [\n    {\n      \"body\": \"closing RFI because we already got response in a different RFI\"\n    }\n  ],\n  \"customAttributes\": [\n    {\n      \"values\": [\n        \"string\"\n      ],\n      \"isSelectable\": true\n    }\n  ],\n  \"virtualFolderUrn\": \"string\",\n  \"syncToken\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis",
+							"host": [
+								"{{rfis_prefix_qa}}"
+							],
+							"path": [
+								"v3",
+								"projects",
+								"{{sourceProjectID}}",
+								"rfis"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bridge",
+			"item": [
+				{
+					"name": "Chain Bridge->Reopen Bridged RFI and verify",
+					"item": [
+						{
+							"name": "Project A -> Project B",
+							"item": [
+								{
+									"name": "get_RFIId_In_Source_Project",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"closed\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is false\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.false;",
+													"});",
+													"",
+													"pm.collectionVariables.set(\"source_Custom_Identifier\", jsonData.customIdentifier); ",
+													"pm.collectionVariables.set(\"CBRFITitle\", jsonData.title); ",
+													"",
+													"",
+													"pm.test(\"Share attribute is true in the response\", function () {",
+													"    pm.expect(jsonData.permittedActions.share).to.be.true;",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{CBrfiId}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{sourceProjectID}}",
+												"rfis",
+												"{{CBrfiId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Share_Closed_RFI_from_ProjectA_To_ProjectB",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response status code is 204\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});",
+													"",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"targetProjectIds\": [\n    \"{{ProjectBId}}\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{CBrfiId}}/bridge",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{sourceProjectID}}",
+												"rfis",
+												"{{CBrfiId}}",
+												"bridge"
+											]
+										},
+										"description": "### POST /v3/projects/{{ProjectAId}}/rfis/{{CBrfiId}}/bridge\n\nThis endpoint is used to perform an HTTP POST request to bridge RFIs between projects.\n\n#### Request Body\n\n- Raw request body type\n    \n    - targetProjectIds (array of strings, required): An array of project IDs to which the RFI will be bridged.\n        \n\n#### Response (400 - Bad Request)\n\nThe response for this request is in the form of a JSON schema:\n\n``` json\n{\n  \"title\": \"\",\n  \"details\": [\n    {\n      \"code\": \"\",\n      \"errors\": [\n        {\n          \"code\": \"\",\n          \"params\": [\"\"],\n          \"message\": \"\",\n          \"path\": [],\n          \"description\": \"\"\n        }\n      ],\n      \"in\": \"\",\n      \"message\": \"\",\n      \"name\": \"\",\n      \"path\": [\"\"]\n    }\n  ],\n  \"detail\": [\n    {\n      \"code\": \"\",\n      \"errors\": [\n        {\n          \"code\": \"\",\n          \"params\": [\"\"],\n          \"message\": \"\",\n          \"path\": [],\n          \"description\": \"\"\n        }\n      ],\n      \"in\": \"\",\n      \"message\": \"\",\n      \"name\": \"\",\n      \"path\": [\"\"]\n    }\n  ]\n}\n\n ```\n\nThis response indicates a 400 Bad Request status with a JSON schema containing error details."
+									},
+									"response": []
+								},
+								{
+									"name": "Search_RFI_in_target_projectB",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Verify status is closed\", function () {",
+													"    pm.expect(jsonData.results.length).to.be.above(0); // Fixed TypeError by checking if results array is not empty",
+													"    pm.expect(jsonData.results[0].status).to.equal(\"closed\");",
+													"});",
+													"",
+													"pm.test(\"RFI ID from source RFI is stored as external Id in target RFI\", function () {",
+													"    if(jsonData.results.length > 0) { // Added a check to ensure results array is not empty",
+													"        pm.expect(jsonData.results[0].reference).to.eql(pm.variables.get(\"source_custom_identifier\"));",
+													"    }",
+													"});",
+													"",
+													"pm.test(\"comments not synced to target project bridged RFI\", function () {",
+													"    if(jsonData.results.length > 0) { // Added a check to ensure results array is not empty",
+													"        pm.expect(jsonData.results[0].commentsCount).to.equal(0);",
+													"    }",
+													"});",
+													"",
+													"",
+													"pm.test(\"Extract and set RFI ID as a collection variable\", function () {",
+													"    if(jsonData.results.length > 0) {",
+													"        var rfiId = jsonData.results[0].id;",
+													"        pm.collectionVariables.set(\"rfiId_ProjectB\", rfiId);",
+													"    }",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "User-Agent",
+												"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											},
+											{
+												"key": "Accept-Language",
+												"value": "en-US"
+											},
+											{
+												"key": "Accept-Encoding",
+												"value": "gzip, deflate, br, zstd"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "https://acc-qa.autodesk.com"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-site"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA"
+											},
+											{
+												"key": "Connection",
+												"value": "keep-alive"
+											},
+											{
+												"key": "Priority",
+												"value": "u=0"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"search\":\"{{CBRFITitle}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}//v3/projects/{{ProjectBId}}/search:rfis",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"",
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"search:rfis"
+											]
+										},
+										"description": "Generated from cURL: curl 'https://developer-stg.api.autodesk.com/construction/rfis-qa/v3/projects/c197ca02-cf25-4f11-a385-2dbb9c899b46/search:rfis' --compressed -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0' -H 'Accept: */*' -H 'Accept-Language: en-US' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json' -H 'Origin: https://acc-qa.autodesk.com' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-site' -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA' -H 'Connection: keep-alive' -H 'Priority: u=0' --data-raw '{\"limit\":50,\"offset\":0,\"fields\":[\"id\",\"customIdentifier\",\"title\",\"question\",\"status\",\"previousStatus\",\"assignedTo\",\"dueDate\",\"locationDescription\",\"officialResponse\",\"respondedAt\",\"respondedBy\",\"createdBy\",\"createdAt\",\"updatedBy\",\"updatedAt\",\"closedAt\",\"closedBy\",\"containerId\",\"suggestedAnswer\",\"coReviewers\",\"watchers\",\"answeredAt\",\"answeredBy\",\"costImpact\",\"scheduleImpact\",\"priority\",\"discipline\",\"category\",\"reference\",\"attachmentsCount\",\"commentsCount\",\"managerId\",\"constructionManagerId\",\"architects\",\"reviewers\",\"customAttributes\",\"locations\",\"officialResponseStatus\",\"rfiTypeId\",\"syncVersion\",\"bridgedSource\",\"bridgedTarget\",\"bridgeSyncOutdated\"],\"search\":\"%CB- API bridge - Jan17-2%\"}'"
+									},
+									"response": []
+								},
+								{
+									"name": "get_target_project_ProjectB",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"let targetResponse = pm.response.json();",
+													"",
+													"/*//get variables from target response",
+													"let externalID = targetResponse.reference;",
+													"let location = targetResponse.location;",
+													"let officialResponseText = targetResponse.officialResponse;",
+													"let officialResponseStatus = targetResponse.officialResponseStatus;",
+													"",
+													"//get variable from source response which are set as collection variables",
+													"let customIdentifier = pm.collectionVariables.get(\"sourceCustomIdentifier\");",
+													"let sourceLocation = pm.collectionVariables.get(\"sourceLocation\");",
+													"let sourceOfficialResponse = pm.collectionVariables.get(\"sourceOfficialResponse\");",
+													"let sourceORStatus = pm.collectionVariables.get(\"sourceORStatus\");",
+													"",
+													"pm.test(\"Compare custom indifier copied into externalID\", function () {",
+													"    pm.expect(externalID).to.eql(customIdentifier);",
+													"});",
+													"",
+													"pm.test(\"location copied properly\", function () {",
+													"    pm.expect(location).to.eql(sourceLocation);",
+													"});",
+													"",
+													"pm.test(\"official response copied properly\", function () {",
+													"    pm.expect(officialResponseText).to.eql(sourceOfficialResponse);",
+													"});",
+													"",
+													"pm.test(\"official response status copied properly\", function () {",
+													"    pm.expect(officialResponseStatus).to.eql(sourceORStatus);",
+													"}); */",
+													"",
+													"pm.test(\"Watchers field should not have any value\", function () {",
+													"    pm.expect(targetResponse.watchers).to.be.an('array').that.is.empty;",
+													"});",
+													"",
+													"pm.test(\"coreviewers field should not have any value\", function () {",
+													"    pm.expect(targetResponse.coReviewers).to.be.an('array').that.is.empty;",
+													"});",
+													"",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectBId}}/rfis/{{rfiId_ProjectB}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"rfis",
+												"{{rfiId_ProjectB}}"
+											]
+										},
+										"description": "Generated from cURL: curl --request GET \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'x-user-id: '"
+									},
+									"response": []
+								},
+								{
+									"name": "edit_RFIDetails_InTargetProject",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"closed\");",
+													"});",
+													"",
+													"pm.collectionVariables.set(\"target1_Custom_Identifier\", jsonData.customIdentifier);",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"customIdentifier\": \"API_{{$randomAlphaNumeric}}\",\n  \"watchers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectBId}}/rfis/{{rfiId_ProjectB}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"rfis",
+												"{{rfiId_ProjectB}}"
+											]
+										},
+										"description": "Generated from cURL: curl --request PATCH \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'Content-Type: application/json' \\\n  --header 'x-user-id: ' \\\n  --data '{\n  \"oldStatus\": \"open\",\n  \"status\": \"open\",\n  \"customIdentifier\": \"353\",\n  \"title\": \"wall color\",\n  \"question\": \"what should be the color of the outer wall?\",\n  \"officialResponse\": \"blue\",\n  \"officialResponseStatus\": \"answered\",\n  \"aggregatedResponseIds\": [\n    \"497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n  ],\n  \"aggregatedResponseAttachments\": [\n    {\n      \"attachmentType\": \"rfiOfficialResponse\",\n      \"displayName\": \"myfile.pdf\",\n      \"fileName\": \"myfile.pdf\",\n      \"storageUrn\": \"string\",\n      \"sourceAttachmentId\": \"85f354ed-e60a-410f-9654-a6616d57ae3a\",\n      \"attachmentId\": \"85f354ed-e60a-410f-9654-a6616d57ae3a\"\n    }\n  ],\n  \"suggestedAnswer\": \"blue\",\n  \"assignedTo\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"locationDescription\": \"In the middle of the room\",\n  \"locations\": [\n    \"AJJASD2-FFE3\",\n    \"JTOEN-FFD33\"\n  ],\n  \"dueDate\": \"2018-01-12T13:06:39.216Z\",\n  \"costImpact\": \"Yes\",\n  \"scheduleImpact\": \"Yes\",\n  \"priority\": \"High\",\n  \"discipline\": [\n    \"Architectural\"\n  ],\n  \"category\": [\n    \"Constructability\"\n  ],\n  \"reference\": \"ID-1234\",\n  \"coReviewers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"watchers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"commentsAttributes\": [\n    {\n      \"body\": \"closing RFI because we already got response in a different RFI\"\n    }\n  ],\n  \"commentSyncToken\": \"string\",\n  \"customAttributes\": [\n    {\n      \"values\": [\n        \"string\"\n      ],\n      \"isSelectable\": true\n    }\n  ],\n  \"returnForReviewerList\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"syncToken\": \"string\",\n  \"responseSyncToken\": \"string\",\n  \"attachments\": [\n    {\n      \"attachmentType\": \"rfiOfficialResponse\",\n      \"displayName\": \"myfile.pdf\",\n      \"fileName\": \"myfile.pdf\",\n      \"storageUrn\": \"string\"\n    }\n  ],\n  \"attachmentSyncToken\": \"string\",\n  \"bridgeTargetProjectIds\": [\n    \"497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n  ]\n}'"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Project B -> Project C",
+							"item": [
+								{
+									"name": "Share_Closed_RFI_from_ProjectB_To_ProjectC",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response status code is 204\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"targetProjectIds\": [\n    \"{{ProjectCId}}\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectBId}}/rfis/{{rfiId_ProjectB}}/bridge",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"rfis",
+												"{{rfiId_ProjectB}}",
+												"bridge"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search_RFI_in_target_projectC",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"pm.collectionVariables.set(\"rfiId_ProjectC\", jsonData.results[0]?.id);",
+													"",
+													"pm.test(\"Verify status is closed\", function () {",
+													"    pm.expect(jsonData.results[0]?.status).to.equal(\"closed\");",
+													"});",
+													"",
+													"pm.test(\"Verify RFI ID from source RFI is stored as external Id in target RFI\", function () {",
+													"    pm.expect(jsonData.results[0]?.reference).to.eql(pm.variables.get(\"target1_Custom_Identifier\"));",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "User-Agent",
+												"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											},
+											{
+												"key": "Accept-Language",
+												"value": "en-US"
+											},
+											{
+												"key": "Accept-Encoding",
+												"value": "gzip, deflate, br, zstd"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "https://acc-qa.autodesk.com"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-site"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA"
+											},
+											{
+												"key": "Connection",
+												"value": "keep-alive"
+											},
+											{
+												"key": "Priority",
+												"value": "u=0"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"search\":\"{{CBRFITitle}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}//v3/projects/{{ProjectCId}}/search:rfis",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"",
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"search:rfis"
+											]
+										},
+										"description": "Generated from cURL: curl 'https://developer-stg.api.autodesk.com/construction/rfis-qa/v3/projects/c197ca02-cf25-4f11-a385-2dbb9c899b46/search:rfis' --compressed -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0' -H 'Accept: */*' -H 'Accept-Language: en-US' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json' -H 'Origin: https://acc-qa.autodesk.com' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-site' -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA' -H 'Connection: keep-alive' -H 'Priority: u=0' --data-raw '{\"limit\":50,\"offset\":0,\"fields\":[\"id\",\"customIdentifier\",\"title\",\"question\",\"status\",\"previousStatus\",\"assignedTo\",\"dueDate\",\"locationDescription\",\"officialResponse\",\"respondedAt\",\"respondedBy\",\"createdBy\",\"createdAt\",\"updatedBy\",\"updatedAt\",\"closedAt\",\"closedBy\",\"containerId\",\"suggestedAnswer\",\"coReviewers\",\"watchers\",\"answeredAt\",\"answeredBy\",\"costImpact\",\"scheduleImpact\",\"priority\",\"discipline\",\"category\",\"reference\",\"attachmentsCount\",\"commentsCount\",\"managerId\",\"constructionManagerId\",\"architects\",\"reviewers\",\"customAttributes\",\"locations\",\"officialResponseStatus\",\"rfiTypeId\",\"syncVersion\",\"bridgedSource\",\"bridgedTarget\",\"bridgeSyncOutdated\"],\"search\":\"%CB- API bridge - Jan17-2%\"}'"
+									},
+									"response": []
+								},
+								{
+									"name": "get_target_project_ProjectC",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"let targetResponse = pm.response.json();",
+													"",
+													"/*//get variables from target response",
+													"let externalID = targetResponse.reference;",
+													"let location = targetResponse.location;",
+													"let officialResponseText = targetResponse.officialResponse;",
+													"let officialResponseStatus = targetResponse.officialResponseStatus;",
+													"",
+													"//get variable from source response which are set as collection variables",
+													"let customIdentifier = pm.collectionVariables.get(\"sourceCustomIdentifier\");",
+													"let sourceLocation = pm.collectionVariables.get(\"sourceLocation\");",
+													"let sourceOfficialResponse = pm.collectionVariables.get(\"sourceOfficialResponse\");",
+													"let sourceORStatus = pm.collectionVariables.get(\"sourceORStatus\");",
+													"",
+													"pm.test(\"Compare custom indifier copied into externalID\", function () {",
+													"    pm.expect(externalID).to.eql(customIdentifier);",
+													"});",
+													"",
+													"pm.test(\"location copied properly\", function () {",
+													"    pm.expect(location).to.eql(sourceLocation);",
+													"});",
+													"",
+													"pm.test(\"official response copied properly\", function () {",
+													"    pm.expect(officialResponseText).to.eql(sourceOfficialResponse);",
+													"});",
+													"",
+													"pm.test(\"official response status copied properly\", function () {",
+													"    pm.expect(officialResponseStatus).to.eql(sourceORStatus);",
+													"}); */",
+													"",
+													"pm.test(\"Watchers field should not have any value\", function () {",
+													"    pm.expect(targetResponse.watchers).to.be.an('array').that.is.empty;",
+													"});",
+													"",
+													"pm.test(\"coreviewers field should not have any value\", function () {",
+													"    pm.expect(targetResponse.coReviewers).to.be.an('array').that.is.empty;",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "x-user-id",
+												"value": "{{x-user-id}}"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectCId}}/rfis/{{rfiId_ProjectC}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"rfis",
+												"{{rfiId_ProjectC}}"
+											]
+										},
+										"description": "Generated from cURL: curl --request GET \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'x-user-id: '"
+									},
+									"response": []
+								},
+								{
+									"name": "edit_RFIDetails_InTargetProjectC",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"customIdentifier\": \"API_{{$randomAlphaNumeric}}\",\n  \"watchers\": [\n    {\n            \"id\": \"LRAJTTASPPJFKFJV\",  //bic3\n            \"type\": \"user\"\n    },\n    {\n            \"id\": \"T9VJV7BWQR2BZU6Z\",\n            \"type\": \"user\"\n        }\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectCId}}/rfis/{{rfiId_ProjectC}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"rfis",
+												"{{rfiId_ProjectC}}"
+											]
+										},
+										"description": "Generated from cURL: curl --request PATCH \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'Content-Type: application/json' \\\n  --header 'x-user-id: ' \\\n  --data '{\n  \"oldStatus\": \"open\",\n  \"status\": \"open\",\n  \"customIdentifier\": \"353\",\n  \"title\": \"wall color\",\n  \"question\": \"what should be the color of the outer wall?\",\n  \"officialResponse\": \"blue\",\n  \"officialResponseStatus\": \"answered\",\n  \"aggregatedResponseIds\": [\n    \"497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n  ],\n  \"aggregatedResponseAttachments\": [\n    {\n      \"attachmentType\": \"rfiOfficialResponse\",\n      \"displayName\": \"myfile.pdf\",\n      \"fileName\": \"myfile.pdf\",\n      \"storageUrn\": \"string\",\n      \"sourceAttachmentId\": \"85f354ed-e60a-410f-9654-a6616d57ae3a\",\n      \"attachmentId\": \"85f354ed-e60a-410f-9654-a6616d57ae3a\"\n    }\n  ],\n  \"suggestedAnswer\": \"blue\",\n  \"assignedTo\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"locationDescription\": \"In the middle of the room\",\n  \"locations\": [\n    \"AJJASD2-FFE3\",\n    \"JTOEN-FFD33\"\n  ],\n  \"dueDate\": \"2018-01-12T13:06:39.216Z\",\n  \"costImpact\": \"Yes\",\n  \"scheduleImpact\": \"Yes\",\n  \"priority\": \"High\",\n  \"discipline\": [\n    \"Architectural\"\n  ],\n  \"category\": [\n    \"Constructability\"\n  ],\n  \"reference\": \"ID-1234\",\n  \"coReviewers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"watchers\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"commentsAttributes\": [\n    {\n      \"body\": \"closing RFI because we already got response in a different RFI\"\n    }\n  ],\n  \"commentSyncToken\": \"string\",\n  \"customAttributes\": [\n    {\n      \"values\": [\n        \"string\"\n      ],\n      \"isSelectable\": true\n    }\n  ],\n  \"returnForReviewerList\": [\n    {\n      \"id\": \"PER8KQPK2JRT\",\n      \"type\": \"user\"\n    }\n  ],\n  \"syncToken\": \"string\",\n  \"responseSyncToken\": \"string\",\n  \"attachments\": [\n    {\n      \"attachmentType\": \"rfiOfficialResponse\",\n      \"displayName\": \"myfile.pdf\",\n      \"fileName\": \"myfile.pdf\",\n      \"storageUrn\": \"string\"\n    }\n  ],\n  \"attachmentSyncToken\": \"string\",\n  \"bridgeTargetProjectIds\": [\n    \"497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n  ]\n}'"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Project C -> Project D",
+							"item": [
+								{
+									"name": "Share_Closed_RFI_from_ProjectC_To_ProjectD",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response status code is 403 forbidden\", function () {",
+													"    pm.response.to.have.status(403);",
+													"});",
+													"",
+													"pm.test(\"Response has the expected Content-Type header\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/xml\");",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"targetProjectIds\": [\n    \"{{ProjectDId}}\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectCId}}/rfis/{{rfiId_ProjectC}}/bridge",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"rfis",
+												"{{rfiId_ProjectC}}",
+												"bridge"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Search_RFI_in_target_projectD",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"pm.collectionVariables.set(\"rfiId_ProjectD\", jsonData.results[0].id);",
+													"",
+													"pm.test(\"Verify status is closed\", function () {",
+													"    pm.expect(jsonData.results[0].status).to.equal(\"closed\");",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "User-Agent",
+												"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											},
+											{
+												"key": "Accept-Language",
+												"value": "en-US"
+											},
+											{
+												"key": "Accept-Encoding",
+												"value": "gzip, deflate, br, zstd"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "https://acc-qa.autodesk.com"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-site"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA"
+											},
+											{
+												"key": "Connection",
+												"value": "keep-alive"
+											},
+											{
+												"key": "Priority",
+												"value": "u=0"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"search\":\"{{CBRFITitle}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}//v3/projects/{{ProjectDId}}/search:rfis",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"",
+												"v3",
+												"projects",
+												"{{ProjectDId}}",
+												"search:rfis"
+											]
+										},
+										"description": "Generated from cURL: curl 'https://developer-stg.api.autodesk.com/construction/rfis-qa/v3/projects/c197ca02-cf25-4f11-a385-2dbb9c899b46/search:rfis' --compressed -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:134.0) Gecko/20100101 Firefox/134.0' -H 'Accept: */*' -H 'Accept-Language: en-US' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json' -H 'Origin: https://acc-qa.autodesk.com' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-site' -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNHI0Y21Jc2hvb1pXclNPUUVlU2w4TnRweXR2dWIwcmEzMFJCZFp1Q0hGbGd4Vm1NSFpjTXNlaWw1bW9iNkhsTiIsInVzZXJpZCI6IlgzQThQWkxSVVNUQyIsImV4cCI6MTczNzA5NDk0MX0.J9_RHc92alamGGFMQ53vaDjD6fpx43MRlBVlF35F8zgegVFyR4nidp9QX6Bl9CipO5xV_GQMN89QvfpKYlL2ir5sibyQqEkfRWMNiOklsL5p4xrK7nPqDsr1j5l_LPzJvLhuOioxgAS-GjjTZTTF0mRzu0eNCwc3-zipa2wSTr9tjsKg8El_MFt9rfQh6ESpKiktUumg9ftT9uRVi4MnJeVs8bv77rBL-SvCjt8JzMcDSWf3QY78T79dVB8qJTqeDN8-TeEEShQGtr3LeHlkxLPwT4stpXisEzDtjpshLGmYjwywjwBluCiHmVWOIFVfehfW1dBvI5ZcE0lkFzJjIA' -H 'Connection: keep-alive' -H 'Priority: u=0' --data-raw '{\"limit\":50,\"offset\":0,\"fields\":[\"id\",\"customIdentifier\",\"title\",\"question\",\"status\",\"previousStatus\",\"assignedTo\",\"dueDate\",\"locationDescription\",\"officialResponse\",\"respondedAt\",\"respondedBy\",\"createdBy\",\"createdAt\",\"updatedBy\",\"updatedAt\",\"closedAt\",\"closedBy\",\"containerId\",\"suggestedAnswer\",\"coReviewers\",\"watchers\",\"answeredAt\",\"answeredBy\",\"costImpact\",\"scheduleImpact\",\"priority\",\"discipline\",\"category\",\"reference\",\"attachmentsCount\",\"commentsCount\",\"managerId\",\"constructionManagerId\",\"architects\",\"reviewers\",\"customAttributes\",\"locations\",\"officialResponseStatus\",\"rfiTypeId\",\"syncVersion\",\"bridgedSource\",\"bridgedTarget\",\"bridgeSyncOutdated\"],\"search\":\"%CB- API bridge - Jan17-2%\"}'"
+									},
+									"response": []
+								},
+								{
+									"name": "Share_Closed_RFI_from_ProjectD_To_ProjectE",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response status code is 204\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});",
+													"",
+													"pm.test(\"Response has the expected Content-Type header\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/xml\");",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"targetProjectIds\": [\n    \"f8a23e62-d4bc-49f0-b27d-ad2b63880201\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectDId}}/rfis/{{rfiId_ProjectD}}/bridge",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectDId}}",
+												"rfis",
+												"{{rfiId_ProjectD}}",
+												"bridge"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Reopen and verify",
+							"item": [
+								{
+									"name": "Reopen_BridgedRFI_In_Source_Project",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											},
+											{
+												"key": "Accept-Language",
+												"value": "en-IN,en;q=0.9,de;q=0.8,gl;q=0.7,en-GB;q=0.6,en-US;q=0.5"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiT2NwVDltemNWUThEN2l3ZzRmUEtPbHE5Mjl3RG13ZjJ3WjRUMzRldXhPZnFiRlBoNHFuY21NZk5zaVMwRnpTdiIsInVzZXJpZCI6Ik5YNjI3QzVDSjZCOTVIRFUiLCJleHAiOjE3MzcxMTE0NjB9.eeiXbw_Tx-akhuOvO1n5fINNJVSYklbB54ssOyHglpSgocWZNdDGt9As6l079QqESuak2IcgWtKjxaShuQ7juK_O7ADIyDkjXsQP2NQv1XLZEF6nzdn5wnKvjCR-Y9VzHMMtyZWSmqqFeuRAZcdI3Uvn3xDqEXhoPuLFHEhj46DLw49sOd__l_JcYwi-mN91KsBtGrtI0k7Q6sxfYKHiNoxz2FIZlXR8gkSlvSuS6fyJqAXHKEtDRU4SHgypsSVUAtoIRGJ_lMpjY8oAOcoJOWMTPxqAm5nZftb8pug3zxrszB0wsK-TiuW38vbnPwTNcdkoUgC8ie4G9fP20VPcWg"
+											},
+											{
+												"key": "Cache-Control",
+												"value": "no-cache"
+											},
+											{
+												"key": "Connection",
+												"value": "keep-alive"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "https://acc-qa.autodesk.com"
+											},
+											{
+												"key": "Pragma",
+												"value": "no-cache"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-site"
+											},
+											{
+												"key": "User-Agent",
+												"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"commentsAttributes\":[{\"body\":\"Reopen via API\"}],\"status\":\"answered\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{CBrfiId}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{sourceProjectID}}",
+												"rfis",
+												"{{CBrfiId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectB_After_Reopen",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													"",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectBId}}/rfis/{{rfiId_ProjectB}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"rfis",
+												"{{rfiId_ProjectB}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectC_After_Reopen",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectCId}}/rfis/{{rfiId_ProjectC}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"rfis",
+												"{{rfiId_ProjectC}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectD_After_Reopen",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectDId}}/rfis/{{rfiId_ProjectD}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectDId}}",
+												"rfis",
+												"{{rfiId_ProjectD}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Close RFI on source project",
+							"item": [
+								{
+									"name": "Close_BridgedRFI_In_Source_Project",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'closed'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"closed\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "*/*"
+											},
+											{
+												"key": "Accept-Language",
+												"value": "en-IN,en;q=0.9,de;q=0.8,gl;q=0.7,en-GB;q=0.6,en-US;q=0.5"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiT2NwVDltemNWUThEN2l3ZzRmUEtPbHE5Mjl3RG13ZjJ3WjRUMzRldXhPZnFiRlBoNHFuY21NZk5zaVMwRnpTdiIsInVzZXJpZCI6Ik5YNjI3QzVDSjZCOTVIRFUiLCJleHAiOjE3MzcxMTE0NjB9.eeiXbw_Tx-akhuOvO1n5fINNJVSYklbB54ssOyHglpSgocWZNdDGt9As6l079QqESuak2IcgWtKjxaShuQ7juK_O7ADIyDkjXsQP2NQv1XLZEF6nzdn5wnKvjCR-Y9VzHMMtyZWSmqqFeuRAZcdI3Uvn3xDqEXhoPuLFHEhj46DLw49sOd__l_JcYwi-mN91KsBtGrtI0k7Q6sxfYKHiNoxz2FIZlXR8gkSlvSuS6fyJqAXHKEtDRU4SHgypsSVUAtoIRGJ_lMpjY8oAOcoJOWMTPxqAm5nZftb8pug3zxrszB0wsK-TiuW38vbnPwTNcdkoUgC8ie4G9fP20VPcWg"
+											},
+											{
+												"key": "Cache-Control",
+												"value": "no-cache"
+											},
+											{
+												"key": "Connection",
+												"value": "keep-alive"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "https://acc-qa.autodesk.com"
+											},
+											{
+												"key": "Pragma",
+												"value": "no-cache"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-site"
+											},
+											{
+												"key": "User-Agent",
+												"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"status\":\"closed\",\"aggregatedResponseIds\":[\"7685f3e8-3462-47d3-b783-349635126066\",\"9dab407a-11a4-4e7f-b70f-62fa432d161f\"],\"officialResponseStatus\":\"answered\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{CBrfiId}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{sourceProjectID}}",
+												"rfis",
+												"{{CBrfiId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectB_After_Reopen Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													"",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectBId}}/rfis/{{rfiId_ProjectB}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectBId}}",
+												"rfis",
+												"{{rfiId_ProjectB}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectC_After_Reopen Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectCId}}/rfis/{{rfiId_ProjectC}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectCId}}",
+												"rfis",
+												"{{rfiId_ProjectC}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "get_RFI_In_ProjectD_After_Reopen Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status is 'answered'\", function () {",
+													"    pm.expect(jsonData.status).to.equal(\"answered\");",
+													"});",
+													"",
+													"pm.test(\"bridgesyncoutdated is true\", function () {",
+													"    pm.expect(jsonData.bridgeSyncOutdated).to.be.true;",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{Admin_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer 123"
+											},
+											{
+												"key": "x-user-id",
+												"value": "A772X4ZRJE2Q6N8C"
+											}
+										],
+										"url": {
+											"raw": "{{rfis_prefix_qa}}/v3/projects/{{ProjectDId}}/rfis/{{rfiId_ProjectD}}",
+											"host": [
+												"{{rfis_prefix_qa}}"
+											],
+											"path": [
+												"v3",
+												"projects",
+												"{{ProjectDId}}",
+												"rfis",
+												"{{rfiId_ProjectD}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Bridging",
+					"item": [
+						{
+							"name": "Share_Closed_RFI_To_1_target",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n        \"{{targetProjectId}}\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Share_back_to_source_Project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n        \"{{sourceProjectID}}\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{targetProjectId}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{targetProjectId}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Share_Closed_RFI_With_10_target project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Response time is within an acceptable range\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Response has the expected Content-Type header\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/xml\");",
+											"});",
+											"",
+											"",
+											"pm.test(\"Response body schema is valid XML format\", function () {",
+											"    const responseData = xml2Json(pm.response.text());",
+											"",
+											"    pm.expect(responseData).to.not.be.null;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [ \n\"263f1fa3-7136-48ef-97a7-55d50799145e\", //Test Project for Bridge -1\n\"cc593025-e990-46e2-a22b-8fc002a556b8\", //Test Project for Bridge -3\n\"54a4b208-5333-48c8-9ace-3d68da5ede9a\", //Test Project for Bridge -4\n\"30fb76bb-cec5-4ac4-9b81-5fc521c4530e\", //Test Project for Bridge -5\n\"91aa4f6b-5acd-4493-917a-4e69762dce7b\", //Test Project for Bridge -6\n\"1d4541f2-b1ec-496c-b72b-9828b2ffdf88\", //Test Project for Bridge -7\n\"7e4661f6-119d-49e5-819e-dc1325b58f25\", // Test Project for Bridge -8\n\"ddb1ee2c-9361-4c20-96d7-e3ea7fb514f8\", // Test Project for Bridge -9\n\"f8a23e62-d4bc-49f0-b27d-ad2b63880201\", // Test Project for Bridge -10\n\"3032fd16-e41a-49cc-aee4-09930db7155e\" // Test Project for Bridge -12\n]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Share_Closed_RFI_With_11_target project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Body matches string\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Bridge RFI to projects failed due to soft limits\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n    \"54a4b208-5333-48c8-9ace-3d68da5ede9a\",\n    \"263f1fa3-7136-48ef-97a7-55d50799145e\",\n    \"c197ca02-cf25-4f11-a385-2dbb9c899b46\",\n    \"cc593025-e990-46e2-a22b-8fc002a556b8\",\n    \"30fb76bb-cec5-4ac4-9b81-5fc521c4530e\",\n    \"91aa4f6b-5acd-4493-917a-4e69762dce7b\",\n    \"1d4541f2-b1ec-496c-b72b-9828b2ffdf88\",\n    \"7e4661f6-119d-49e5-819e-dc1325b58f25\",\n    \"ddb1ee2c-9361-4c20-96d7-e3ea7fb514f8\",\n    \"f8a23e62-d4bc-49f0-b27d-ad2b63880201\",\n    \"3032fd16-e41a-49cc-aee4-09930db7155e\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative Tests",
+					"item": [
+						{
+							"name": "Invalid_Auth_Share_Closed_RFI",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 401\", function () {",
+											"    pm.expect(pm.response.code).to.equal(401);",
+											"});",
+											"",
+											"pm.test(\"Body matches string\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Access token provided is invalid or expired\");",
+											"});",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(200);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Validate the response schema for developerMessage, moreInfo, and errorCode fields\", function () {",
+											"  const responseData = pm.response.json();",
+											"  ",
+											"  pm.expect(responseData).to.be.an('object');",
+											"  pm.expect(responseData).to.have.property('developerMessage').that.is.a('string');",
+											"  pm.expect(responseData).to.have.property('moreInfo').that.is.a('string');",
+											"  pm.expect(responseData).to.have.property('errorCode').that.is.a('string');",
+											"});",
+											"",
+											"pm.test(\"Response includes the header Content-Type\", function () {",
+											"    pm.expect(pm.response.headers.has(\"Content-Type\")).to.be.true;",
+											"});",
+											"",
+											"",
+											"pm.test(\"Content-Type header is set to 'application/json'\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiaGxBVWJ5ME1aMzNOdmYyUFZZdFRObE5VMGhXVWY0cVlqT3llYVl2WkE0U085bEdFSVBZUk1JeTNsamd5TjROZyIsImV4cCI6MTczMzMxNzQyMiwidXNlcmlkIjoiQzRNWkxHTUM1S1BZIn0.Yu3zID1RBQ9C7YLqo-28iH0mNCdk1FkATehZAPrEVnioD47R3_Z6ybtFf1a_NU99R6YVaca5Ez6CTe4mHQpTOTvUW36p_llvvS7_K5rePB00_68H5PNnDNe8CVJW3e77dtcxFh5DZo6WkP-ehtt2HPfzWLLwyMrwg_vJq5RDBX1zSaK_DIVoO7GNk5ux0ci2pTGLz1MFA5zyzKgXrVNEcFE5mSvCI_iP5QS-EnTf_CIXxg37_h2iahikVdDcGvBziQOP0gaJF1e-jomeJHzbFsb20VAzmKcsSFHY34DK2scFXWJTdXkG89aDqZTRmxz_uLFSbI_7gkYi6Ky3oYpkLw",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n    \"79a7a2b2-8d34-479b-916e-6ba1236cd5c3\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Non_Permissable_user_Share_Closed_RFI",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Fixed syntax error in the third test",
+											"pm.test(\"Response status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Title field exists in the response\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData).to.have.property('title');",
+											"});",
+											"",
+											"pm.test(\"Body is correct\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"user was not found on the project/account\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{non_Admin_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n    \"79a7a2b2-8d34-479b-916e-6ba1236cd5c3\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validate_Response_when_Share_Answered_RFI",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 403\", function () {",
+											"    pm.expect(pm.response.code).to.equal(403);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Response has all the required fields\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData).to.be.an('object');",
+											"    pm.expect(responseData).to.have.property('title');",
+											"    pm.expect(responseData).to.have.property('details');",
+											"    pm.expect(responseData).to.have.property('errorCode');",
+											"    pm.expect(responseData).to.have.property('detail');",
+											"    pm.expect(responseData).to.have.property('retryable');",
+											"});",
+											"",
+											"pm.test(\"Response Title field should have detailed message\", function () {",
+											"  const responseData = pm.response.json();",
+											"  ",
+											"  pm.expect(responseData).to.be.an('object');",
+											"  pm.expect(responseData.title).to.include(\"RFI is not at closed state but bridge targets passed\");",
+											"});",
+											"",
+											"",
+											"pm.test(\"Details field should have detailed message\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData).to.be.an('object');",
+											"    pm.expect(responseData.detail).to.equal(\"Request is forbidden\");",
+											"});",
+											"",
+											"pm.test(\"error code message\", function () {",
+											"  const responseData = pm.response.json();",
+											"  pm.expect(responseData.errorCode).to.include(\"RFIS_SERVICE_FORBIDDEN\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n    \"79a7a2b2-8d34-479b-916e-6ba1236cd5c3\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{invalid_rfiid}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{invalid_rfiid}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Target Project RFI validation",
+					"item": [
+						{
+							"name": "searchForRFIwithTitleInTargetProject",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"let responseData = pm.response.json();",
+											"pm.test(\"Response contains results\", function () {",
+											"    pm.expect(responseData.results).to.be.an('array').that.is.not.empty;",
+											"});",
+											"pm.test(\"Verify the target RFI ID is set in the environment\", function () {",
+											"    pm.expect(responseData.results[0]).to.have.property('id');",
+											"    pm.collectionVariables.set(\"targetProject_rfiid\", responseData.results[0].id);",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "x-user-id",
+										"value": "A772X4ZRJE2Q6N8C"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"search\":\"Bridge Via API with all details\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{targetProjectId}}/search:rfis",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{targetProjectId}}",
+										"search:rfis"
+									]
+								},
+								"description": "Generated from cURL: curl --request POST \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/search:rfis \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'Content-Type: application/json' \\\n  --header 'x-user-id: ' \\\n  --data '{\n  \"limit\": 10,\n  \"offset\": 0,\n  \"search\": \"string\",\n  \"sort\": [\n    {\n      \"field\": \"createdAt\",\n      \"order\": \"DESC\",\n      \"subField\": \"e908815a-22e1-45cc-a0e2-5d5e43dc18f4\"\n    }\n  ],\n  \"filter\": {\n    \"status\": [\n      \"draft\",\n      \"submitted\",\n      \"open\",\n      \"openRev1\",\n      \"openRev2\",\n      \"answered\",\n      \"answeredRev1\",\n      \"answeredManager\",\n      \"closed\"\n    ],\n    \"officialResponseStatus\": [\n      \"answered\",\n      \"rejected\"\n    ],\n    \"includeHidden\": false,\n    \"assignedTo\": [\n      \"string\"\n    ],\n    \"locations\": [\n      \"string\"\n    ],\n    \"createdAt\": \"string\",\n    \"closedAt\": \"string\",\n    \"createdBy\": [\n      \"string\"\n    ],\n    \"dueDate\": \"string\",\n    \"costImpact\": [\n      \"Yes\"\n    ],\n    \"scheduleImpact\": [\n      \"Yes\"\n    ],\n    \"priority\": [\n      \"High\"\n    ],\n    \"id\": [\n      \"string\"\n    ],\n    \"reference\": \"string\",\n    \"discipline\": [\n      \"Building Management System\"\n    ],\n    \"category\": [\n      \"Code Compliance\"\n    ],\n    \"customAttributes\": {},\n    \"rfiTypeId\": [\n      \"string\"\n    ],\n    \"bridgedSource\": true,\n    \"bridgedTarget\": true\n  },\n  \"fields\": [\n    \"id\",\n    \"customIdentifier\",\n    \"title\",\n    \"question\",\n    \"status\",\n    \"assignedTo\",\n    \"dueDate\",\n    \"locationDescription\",\n    \"locations\",\n    \"officialResponse\",\n    \"officialResponseStatus\",\n    \"officialResponseActors\",\n    \"respondedAt\",\n    \"respondedBy\",\n    \"createdBy\",\n    \"createdAt\",\n    \"updatedBy\",\n    \"updatedAt\",\n    \"closedAt\",\n    \"closedBy\",\n    \"containerId\",\n    \"suggestedAnswer\",\n    \"coReviewers\",\n    \"watchers\",\n    \"answeredAt\",\n    \"answeredBy\",\n    \"costImpact\",\n    \"scheduleImpact\",\n    \"priority\",\n    \"discipline\",\n    \"category\",\n    \"reference\",\n    \"sheetMetadata\",\n    \"attachmentsCount\",\n    \"commentsCount\",\n    \"managerId\",\n    \"constructionManagerId\",\n    \"architects\",\n    \"reviewers\",\n    \"rfiTypeId\",\n    \"bridgedSource\",\n    \"bridgedTarget\",\n    \"bridgeSyncOutdated\"\n  ]\n}'"
+							},
+							"response": []
+						},
+						{
+							"name": "get_source_project_rfi",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// jsonData will contain the valid JSON object from the response body",
+											"let sourceResponse = pm.response.json();",
+											"",
+											"let sourceCustomIdentifier = sourceResponse.customIdentifier;",
+											"let sourceLocation = targetResponse.locations;",
+											"let sourceOfficialResponse = targetResponse.officialResponse;",
+											"let sourceORStatus = targetResponse.officialResponseStatus;",
+											"// Variables and JSON Keys are case sensitive!",
+											"//pm.collectionVariables.set(\"sourceResponse\", JSON.stringify(jsonData));",
+											"",
+											"//Set custom identifier as collection variable",
+											"pm.collectionVariables.set(\"customIdentifier\", \"sourceCustomIdentifier\");",
+											"",
+											"",
+											"//Set custom identifier as collection variable",
+											"pm.collectionVariables.set(\"locations\", \"sourceLocation\");",
+											"",
+											"//Set official response value",
+											"pm.collectionVariables.set(\"officialResponse\", \"sourceOfficialResponse\");",
+											"pm.collectionVariables.set(\"officialResponseStatus\", \"sourceORStatus\");",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "x-user-id",
+										"value": "A772X4ZRJE2Q6N8C"
+									}
+								],
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/rfis/{{rfiId}}",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{sourceProjectID}}",
+										"rfis",
+										"{{rfiId}}"
+									]
+								},
+								"description": "Generated from cURL: curl --request GET \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'x-user-id: '"
+							},
+							"response": []
+						},
+						{
+							"name": "get_target_project_rfi",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"let targetResponse = pm.response.json();",
+											"",
+											"//get variables from target response",
+											"let externalID = targetResponse.reference;",
+											"let location = targetResponse.location;",
+											"let officialResponseText = targetResponse.officialResponse;",
+											"let officialResponseStatus = targetResponse.officialResponseStatus;",
+											"",
+											"//get variable from source response which are set as collection variables",
+											"let customIdentifier = pm.collectionVariables.get(\"sourceCustomIdentifier\");",
+											"let sourceLocation = pm.collectionVariables.get(\"sourceLocation\");",
+											"let sourceOfficialResponse = pm.collectionVariables.get(\"sourceOfficialResponse\");",
+											"let sourceORStatus = pm.collectionVariables.get(\"sourceORStatus\");",
+											"",
+											"pm.test(\"Compare custom indifier copied into externalID\", function () {",
+											"    pm.expect(externalID).to.eql(customIdentifier);",
+											"});",
+											"",
+											"pm.test(\"location copied properly\", function () {",
+											"    pm.expect(location).to.eql(sourceLocation);",
+											"});",
+											"",
+											"pm.test(\"official response copied properly\", function () {",
+											"    pm.expect(officialResponseText).to.eql(sourceOfficialResponse);",
+											"});",
+											"",
+											"pm.test(\"official response status copied properly\", function () {",
+											"    pm.expect(officialResponseStatus).to.eql(sourceORStatus);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "x-user-id",
+										"value": "A772X4ZRJE2Q6N8C"
+									}
+								],
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{targetProjectId}}/rfis/{{targetProject_rfiid}}",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{targetProjectId}}",
+										"rfis",
+										"{{targetProject_rfiid}}"
+									]
+								},
+								"description": "Generated from cURL: curl --request GET \\\n  --url https://platform.stoplight.autodesk.com/mocks/root/rfis-service/929366/v3/projects/projectId/rfis/rfiId \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer 123' \\\n  --header 'x-user-id: '"
+							},
+							"response": []
+						},
+						{
+							"name": "Share_Closed_RFI_From_target_To_Target",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});",
+											"",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer 123"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"targetProjectIds\": [\n        \"{{SecondaryTargetProjectId}}\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{rfis_prefix_qa}}/v3/projects/{{targetProjectId}}/rfis/{{targetProject_rfiid}}/bridge",
+									"host": [
+										"{{rfis_prefix_qa}}"
+									],
+									"path": [
+										"v3",
+										"projects",
+										"{{targetProjectId}}",
+										"rfis",
+										"{{targetProject_rfiid}}",
+										"bridge"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Rebridge RFI",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "Search& Filter",
+			"item": [
+				{
+					"name": "searchBridgedRFIs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer 123",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-user-id",
+								"value": "{{x-user-id}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sort\": [\n    {\n      \"field\": \"createdAt\",\n      \"order\": \"DESC\"\n    }\n  ],\n  \"filter\": {\n    \"bridgedTarget\": true\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rfis_prefix_qa}}/v3/projects/{{sourceProjectID}}/search:rfis",
+							"host": [
+								"{{rfis_prefix_qa}}"
+							],
+							"path": [
+								"v3",
+								"projects",
+								"{{sourceProjectID}}",
+								"search:rfis"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UpdatedAtFilter",
+			"item": [
+				{
+					"name": "updated_At_Filter_V3_ProjectList",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-IN,en;q=0.9,de;q=0.8,gl;q=0.7,en-GB;q=0.6,en-US;q=0.5"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiNDdLdWVrcHc4WDVvSXBCQVpkQ043eXRTSHFiTlMwdjVpY1lLaXlHUlNjQVowNDhSTWp2MGM2QmhGOTRIb2M1SCIsInVzZXJpZCI6Ik5YNjI3QzVDSjZCOTVIRFUiLCJleHAiOjE3NDIyMzczMjZ9.XmosVG5P5BJyQfjN_vqDcnpX-MMyk7qeEYeGpaZYUeemfiMPDvUKumLRdSVzny0v91W852eU-TBw_e11VCYGHqfMy4KqD_zFQ8T2EarHhk_ExTPh1P-0d1nGrCZ8Nzi5MjSOwmc7CQ3jPjw5IDE4dCrjdTS-uxAi3k6PIH3u-UC81Ac2UVhPKVcSiuzv3_r_6TFKcEo640-5L3cMNWwoJ-j5iMCdA131NMoVTKV525MmkJzonLNozTvU5og5rL1uYDeKn5ykdi8IpPf_QismPtfygP3dcjT2hLX288pyPEUE2U29k37cujfFcDMCJ4ZoULcmHJPv9Ppez0OEF2PNXw"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-cache"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "https://acc-qa.autodesk.com"
+							},
+							{
+								"key": "Pragma",
+								"value": "no-cache"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"filter\":{\"updatedAt\":\"2025-03-24T00:00:00Z,2025-03-25T23:59:59Z\"}}\n//{\"filter\":{\"updatedAt\":\"2025-03-19T00:00:00Z\"}} //Single date not a range\n//{\"filter\":{\"updatedAt\":\"2025-05-19T00:00:00Z,2025-03-20T23:59:59Z\"}} //future date\n//{\"filter\":{\"updatedAt\":\"2025-03-17T12:57:58Z,2025-02-01T23:59:59Z\"}} //incorrect date range\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rfis_prefix_qa}}/v3/projects/c77cc7cb-9d4b-49a5-9dad-5ec6a4d64000/search:rfis",
+							"host": [
+								"{{rfis_prefix_qa}}"
+							],
+							"path": [
+								"v3",
+								"projects",
+								"c77cc7cb-9d4b-49a5-9dad-5ec6a4d64000",
+								"search:rfis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatedAt_Filter_V2_Projects",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer 123"
+							},
+							{
+								"key": "x-request-id",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{rfis_prefix_prod}}/v2/projects/{{bim_project_id}}/rfis?filter[updatedAt]=2025-03-24T00:00:00Z,2025-03-25T00:00:00Z",
+							"host": [
+								"{{rfis_prefix_prod}}"
+							],
+							"path": [
+								"v2",
+								"projects",
+								"{{bim_project_id}}",
+								"rfis"
+							],
+							"query": [
+								{
+									"key": "filter[updatedAt]",
+									"value": "2025-03-24T00:00:00Z,2025-03-25T00:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatedAt_Filter_V2_containers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-IN,en;q=0.9,de;q=0.8,gl;q=0.7,en-GB;q=0.6,en-US;q=0.5"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXItcHJvZmlsZTpyZWFkIiwidXNlcjpyZWFkIiwidXNlcjp3cml0ZSIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IlBQb3g5R0xLMEpPMnVkeUEwZXd0TVlTQTROcG1HMWJmIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiN3JNYUJLbjJsWXdpQUtVN3JpZVYwRTQwM2tFUWV1MUhyNml4NjF6eFNST25NYmtBbUhrQ2Z0QW1DUlJLR1NtdCIsInVzZXJpZCI6IkM0TVpMR01DNUtQWSIsImV4cCI6MTc0MjMwNTQ0OX0.HjRyJmRTCABGEbyZ9rZSItbp0W6r2gAQLsBF1-u2CRuVYkNuxQSLMaDqk418KXgFm9zGCjMm0smwWHAREqjQlv6poS3PpeihG-1E5AXwFxWqR9C5OOS2MDF6F4z8ZDiAKkPm1zNVDJlyTpVFD2ycBrHImUoGkx2awYCxzYvb_Tkj2o_llMKeV-6IANizuFoPSHOBbSB40HcNe_UI2dVtyLLc0in-smnYZiRrkf126qTfbq8eEh3oJraKwQG41szaKOGLJjHmSuGncHz67_rRuNC4o0kYPfum8JuWWlzSXt7pJrgaqqtyuSacRYWNh51dgDeohghgxNGpwgm8RiCXaA"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-cache"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "https://pm.b360-qa.autodesk.com"
+							},
+							{
+								"key": "Pragma",
+								"value": "no-cache"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rfis_prefix_bim_qa}}/v2/containers/{{bim_container_id}}/rfis?filter%5BupdatedAt%5D=2025-03-26T00:00:00Z,2025-03-27T00:00:00Z",
+							"host": [
+								"{{rfis_prefix_bim_qa}}"
+							],
+							"path": [
+								"v2",
+								"containers",
+								"{{bim_container_id}}",
+								"rfis"
+							],
+							"query": [
+								{
+									"key": "filter%5BupdatedAt%5D",
+									"value": "2025-03-26T00:00:00Z,2025-03-27T00:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "created_At_filter_V3",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "*/*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-IN,en;q=0.9,de;q=0.8,gl;q=0.7,en-GB;q=0.6,en-US;q=0.5"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im1EVUVQb2tuYTF3RU9uZ1k4X3RMNEdOZGtsTV9SUzI1NiIsInBpLmF0bSI6ImFzc2MifQ.eyJzY29wZSI6WyJhY2NvdW50OnJlYWQiLCJhY2NvdW50OndyaXRlIiwiYnVja2V0OmNyZWF0ZSIsImJ1Y2tldDpyZWFkIiwiYnVja2V0OnVwZGF0ZSIsImJ1Y2tldDpkZWxldGUiLCJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJkYXRhOnNlYXJjaCIsInVzZXI6cmVhZCIsInVzZXI6d3JpdGUiLCJ1c2VyLXByb2ZpbGU6cmVhZCIsInZpZXdhYmxlczpyZWFkIl0sImNsaWVudF9pZCI6IjlBdVpqczJ2UU1DUjVxS0xBSlJLaGlmQUZJZ2RZcFNCIiwiaXNzIjoiaHR0cHM6Ly9kZXZlbG9wZXItc3RnLmFwaS5hdXRvZGVzay5jb20iLCJhdWQiOiJodHRwczovL2F1dG9kZXNrLmNvbS9zdGFnaW5nIiwianRpIjoiUmt2eElDNHRORXVldml5TENRaDBMSzFpOG56TUZrTkZ4VDROTWR5dUdQeXR2RU1IQlpMc2R5YWlxUEUyMGdDdyIsInVzZXJpZCI6Ik5YNjI3QzVDSjZCOTVIRFUiLCJleHAiOjE3NDIzODg5NzJ9.X7_q9v6ZAKZc5j5S2dDYow2HVXxXGVaeL5BZmkZen3_53P9waij0YmTeYjDQdrfmu729cEcWjoorexjcQn7Gn04JWkB53pq1V_jMcdbzcZIGGMBIMNNoB_bunmvaZfGNvtB4FhXb-HjCUI2dPNIlW0eVy63hb0qvwkFhOnzuBh29V8LXdAQODcdABcjDXA6PcLMSiBgp4YpLb_yrQreV-SQHZ9TeiuKwIiBpwNCunw7CMo13QKsUtE8B6Sh-RDlfizqvCzjZ25YBU3Ho8ePNzkgumDUGftNsW-P1n2vdZUE-cedWVCTC3Mk_JhcCjNZSXhrrfTmEffFF8wFgu-JSOA"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-cache"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "https://acc-qa.autodesk.com"
+							},
+							{
+								"key": "Pragma",
+								"value": "no-cache"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Chromium\";v=\"130\", \"Google Chrome\";v=\"130\", \"Not?A_Brand\";v=\"99\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"limit\":50,\"offset\":0,\"fields\":[\"id\",\"customIdentifier\",\"title\",\"question\",\"status\",\"previousStatus\",\"assignedTo\",\"dueDate\",\"locationDescription\",\"officialResponse\",\"respondedAt\",\"respondedBy\",\"createdBy\",\"createdAt\",\"updatedBy\",\"updatedAt\",\"closedAt\",\"closedBy\",\"containerId\",\"suggestedAnswer\",\"coReviewers\",\"watchers\",\"answeredAt\",\"answeredBy\",\"costImpact\",\"scheduleImpact\",\"priority\",\"discipline\",\"category\",\"reference\",\"attachmentsCount\",\"commentsCount\",\"managerId\",\"constructionManagerId\",\"architects\",\"reviewers\",\"customAttributes\",\"locations\",\"officialResponseStatus\",\"rfiTypeId\",\"syncVersion\",\"bridgedSource\",\"bridgedTarget\",\"bridgeSyncOutdated\"],\"filter\":{\"createdAt\":\"2025-03-18T23:59:59Z\",\"\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rfis_prefix_qa}}/v3/projects/f1baf8f6-6047-42e1-9527-6964c43279eb/search:rfis",
+							"host": [
+								"{{rfis_prefix_qa}}"
+							],
+							"path": [
+								"v3",
+								"projects",
+								"f1baf8f6-6047-42e1-9527-6964c43279eb",
+								"search:rfis"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ProjectAId",
+			"value": "710403f6-e478-4df7-b750-ea811296c8f1 ",
+			"type": "string"
+		},
+		{
+			"key": "ProjectBId",
+			"value": "c197ca02-cf25-4f11-a385-2dbb9c899b46",
+			"type": "string"
+		},
+		{
+			"key": "ProjectCId",
+			"value": "7e4661f6-119d-49e5-819e-dc1325b58f25",
+			"type": "string"
+		},
+		{
+			"key": "ProjectDId",
+			"value": "91aa4f6b-5acd-4493-917a-4e69762dce7b",
+			"type": "string"
+		},
+		{
+			"key": "CBrfiId",
+			"value": "4128b743-0189-4584-964c-30dc82bb95cc",
+			"type": "string"
+		},
+		{
+			"key": "ProjectEId",
+			"value": "3e8c26ed-ce76-4a83-b39a-c25eadac62ee"
+		},
+		{
+			"key": "targetProject_rfiid",
+			"value": "4128b743-0189-4584-964c-30dc82bb95cc",
+			"type": "string"
+		},
+		{
+			"key": "sourceResponse",
+			"value": ""
+		},
+		{
+			"key": "customIdentifier",
+			"value": ""
+		},
+		{
+			"key": "locations",
+			"value": ""
+		},
+		{
+			"key": "officialResponse",
+			"value": ""
+		},
+		{
+			"key": "officialResponseStatus",
+			"value": ""
+		},
+		{
+			"key": "CBRFITitle",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "rfiId_ProjectB",
+			"value": ""
+		},
+		{
+			"key": "rfiId_ProjectC",
+			"value": ""
+		},
+		{
+			"key": "rfiId_ProjectD",
+			"value": ""
+		},
+		{
+			"key": "source_Custom_Identifier",
+			"value": ""
+		},
+		{
+			"key": "target1_Custom_Identifier",
+			"value": ""
+		},
+		{
+			"key": "rfis_prefix_bim_qa",
+			"value": "https://developer-stg.api.autodesk.com/bim360/rfis-qa",
+			"type": "default"
+		}
+	]
+}
